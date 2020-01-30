@@ -7,6 +7,7 @@ import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDevice;
 import com.polidea.rxandroidble2.scan.ScanResult;
 import com.polidea.rxandroidble2.scan.ScanSettings;
+import com.pooai.blesdk.observer.ToiletCommandObservable;
 
 import java.util.UUID;
 
@@ -61,9 +62,9 @@ public class PooaiBleManager {
                         .build())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doFinally(this::stopScanDevice)
-                .subscribe(scanResult -> {
+                .subscribe((ScanResult scanResult) -> {
                     if (onBleScanListener != null) {
-                        onBleScanListener.scanResult(scanResult);
+                        onBleScanListener.scanResult(scanResult.getBleDevice().getName());
                     }
                 }, throwable -> {
 
@@ -145,6 +146,7 @@ public class PooaiBleManager {
                     .flatMap(notificationObservable -> notificationObservable)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(bytes -> {
+                        ToiletCommandObservable.getInstance().setValue(bytes);
 
                     }, throwable -> {
 
@@ -179,7 +181,7 @@ public class PooaiBleManager {
     }
 
     public interface OnBleScanListener {
-        void scanResult(ScanResult scanResult);
+        void scanResult(String deviceName);
     }
 
     public interface OnBleConnectStateListener {

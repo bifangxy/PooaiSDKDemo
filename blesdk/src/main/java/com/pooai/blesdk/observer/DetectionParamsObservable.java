@@ -8,23 +8,22 @@ import com.pooai.blesdk.util.CRCStuff;
 import java.util.Observable;
 
 /**
- * 作者：created by xieying on 2020-01-12 18:38
+ * 作者：created by xieying on 2020-01-28 16:04
  * 功能：
  */
-public class ControlParamsObservable extends Observable {
+public class DetectionParamsObservable extends Observable {
 
     private static final int LENGTH = 30;
 
-    private static final int START_ADDRESS = 50;
+    private static final int START_ADDRESS = 0;
 
     private static class SingletonHolder {
-        private static final ControlParamsObservable INSTANCE = new ControlParamsObservable();
+        private static final DetectionParamsObservable INSTANCE = new DetectionParamsObservable();
     }
 
-    public static ControlParamsObservable getInstance() {
-        return SingletonHolder.INSTANCE;
+    public static DetectionParamsObservable getInstance() {
+        return DetectionParamsObservable.SingletonHolder.INSTANCE;
     }
-
 
     public void setValue(byte[] values) {
         ToiletState toiletState = PooaiToiletHeartbeatManager.getInstance().getToiletState();
@@ -41,8 +40,7 @@ public class ControlParamsObservable extends Observable {
                 }
             }
         }
-//        setChanged();
-//        notifyObservers(values);
+        /*setChanged();
+        notifyObservers(values);*/
     }
-
 }
