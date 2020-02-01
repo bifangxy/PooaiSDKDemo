@@ -48,9 +48,11 @@ public class MainActivity extends AppCompatActivity {
 
     private BleApdater mBleApdater;
 
-    private List<BluetoothDevice> mPooaiBleDeviceList;
+    private List<PooaiBleDevice> mPooaiBleDeviceList;
 
     private PooaiBleManager2 pooaiBleManager2;
+
+    private PooaiBleManager mPooaiBleManager;
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -87,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
 
         pooaiBleManager2 = PooaiBleManager2.getInstance();
         pooaiBleManager2.initBLE();
+
+        mPooaiBleManager = PooaiBleManager.getInstance();
         initListener();
     }
 
@@ -95,8 +99,11 @@ public class MainActivity extends AppCompatActivity {
         mBleApdater.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                BluetoothDevice pooaiBleDevice = mBleApdater.getData().get(position);
-                pooaiBleManager2.connectDevice(pooaiBleDevice);
+               /* BluetoothDevice pooaiBleDevice = mBleApdater.getData().get(position);
+                pooaiBleManager2.connectDevice(pooaiBleDevice);*/
+
+               PooaiBleDevice pooaiBleDevice = mBleApdater.getData().get(position);
+               mPooaiBleManager.connectDevice(pooaiBleDevice.getMacAddress());
             }
         });
     }
@@ -104,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @OnClick(R.id.bt_start_service)
     public void startService() {
-        /*PooaiBleManager pooaiBleManager = new PooaiBleManager();
+        PooaiBleManager pooaiBleManager = new PooaiBleManager();
         pooaiBleManager.scanDevice(new PooaiBleManager.OnBleScanListener() {
             @Override
             public void scanResult(PooaiBleDevice pooaiBleDevice) {
@@ -114,9 +121,9 @@ public class MainActivity extends AppCompatActivity {
                     mBleApdater.notifyDataSetChanged();
                 }
             }
-        });*/
+        });
 
-        pooaiBleManager2.startScan(new PooaiBleManager2.OnBleScanListener() {
+       /* pooaiBleManager2.startScan(new PooaiBleManager2.OnBleScanListener() {
             @Override
             public void scanResult(BluetoothDevice bluetoothDevice) {
                 if (!mPooaiBleDeviceList.contains(bluetoothDevice)) {
@@ -129,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             public void startScan() {
 
             }
-        });
+        });*/
 
     }
 

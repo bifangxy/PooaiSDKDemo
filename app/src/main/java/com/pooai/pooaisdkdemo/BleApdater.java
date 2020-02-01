@@ -14,13 +14,13 @@ import java.util.List;
  * 作者：created by xieying on 2020-02-01 14:01
  * 功能：
  */
-public class BleApdater extends BaseQuickAdapter<BluetoothDevice, BaseViewHolder> {
-    public BleApdater(@Nullable List<BluetoothDevice> data) {
+public class BleApdater extends BaseQuickAdapter<PooaiBleDevice, BaseViewHolder> {
+    public BleApdater(@Nullable List<PooaiBleDevice> data) {
         super(R.layout.item_ble_device, data);
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, BluetoothDevice item) {
-        helper.setText(R.id.tv_ble_device_name,item.getName()+":"+item.getAddress());
+    protected void convert(BaseViewHolder helper, PooaiBleDevice item) {
+        helper.setText(R.id.tv_ble_device_name,item.getName()+":"+item.getMacAddress());
     }
 }

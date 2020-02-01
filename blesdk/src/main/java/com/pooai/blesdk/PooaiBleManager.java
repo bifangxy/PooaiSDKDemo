@@ -46,6 +46,13 @@ public class PooaiBleManager {
 
     private Observable<RxBleConnection> mRxBleConnectionObservable;
 
+    private static class SingletonHolder {
+        private static final PooaiBleManager INSTANCE = new PooaiBleManager();
+    }
+
+    public static PooaiBleManager getInstance() {
+        return PooaiBleManager.SingletonHolder.INSTANCE;
+    }
 
     public PooaiBleManager() {
         mRxBleClient = AppEvent.getRxBleClient();
