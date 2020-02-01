@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mBleApdater);
 
 
-        pooaiBleManager2 = new PooaiBleManager2();
+        pooaiBleManager2 = PooaiBleManager2.getInstance();
         pooaiBleManager2.initBLE();
         initListener();
     }

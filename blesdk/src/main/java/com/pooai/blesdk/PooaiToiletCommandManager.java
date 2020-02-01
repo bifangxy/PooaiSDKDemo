@@ -44,7 +44,7 @@ public class PooaiToiletCommandManager {
 
 
     public PooaiToiletCommandManager() {
-        mPooaiBleManager = new PooaiBleManager2();
+        mPooaiBleManager = PooaiBleManager2.getInstance();
         mToiletCommandLinkedList = new LinkedList<>();
     }
 

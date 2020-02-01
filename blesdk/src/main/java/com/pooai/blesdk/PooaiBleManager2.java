@@ -18,6 +18,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.pooai.blesdk.observer.DetectionParamsObservable;
 import com.pooai.blesdk.observer.ToiletCommandObservable;
 
 import java.util.Iterator;
@@ -49,6 +50,14 @@ public class PooaiBleManager2 {
 
     private boolean mScanning;
 
+    private static class SingletonHolder {
+        private static final PooaiBleManager2 INSTANCE = new PooaiBleManager2();
+    }
+
+    public static PooaiBleManager2 getInstance() {
+        return PooaiBleManager2.SingletonHolder.INSTANCE;
+    }
+
     private BluetoothAdapter.LeScanCallback startLeScan = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
@@ -79,7 +88,6 @@ public class PooaiBleManager2 {
         return bleAdapter.isEnabled();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void startScan(OnBleScanListener onBleScanListener) {
         mOnBleScanListener = onBleScanListener;
         mHandler.postDelayed(() -> {
