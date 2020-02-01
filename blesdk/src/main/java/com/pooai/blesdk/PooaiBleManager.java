@@ -79,6 +79,28 @@ public class PooaiBleManager {
 
                 });
         compositeDisposable.add(mScanDisposable);
+
+        TimerTaskUtil.timerRx(10000, new TimerTaskUtil.OnRxListener() {
+            @Override
+            public void onNext(Long aLong) {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                stopScanDevice();
+            }
+
+            @Override
+            public void onSubscribe(Disposable disposable) {
+
+            }
+        });
     }
 
     public void stopScanDevice() {
