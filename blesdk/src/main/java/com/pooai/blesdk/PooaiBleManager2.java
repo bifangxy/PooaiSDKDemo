@@ -13,6 +13,7 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -42,6 +43,25 @@ public class PooaiBleManager2 {
 
     private BluetoothGattCharacteristic bleGattCharacteristic;
 
+    private Handler mHandler = new Handler();
+
+    private OnBleScanListener mOnBleScanListener;
+
+    private boolean mScanning;
+
+    private BluetoothAdapter.LeScanCallback startLeScan = new BluetoothAdapter.LeScanCallback() {
+        @Override
+        public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+            Log.d(TAG, "deviceName = " + device.getName());
+            if (device.getName() == null) {
+                return;
+            }
+            if (mOnBleScanListener != null) {
+                mOnBleScanListener.scanResult(device);
+            }
+        }
+    };
+
 
     public boolean initBLE() {
         if (!AppEvent.getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -61,7 +81,15 @@ public class PooaiBleManager2 {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void startScan(OnBleScanListener onBleScanListener) {
-        bleScanner = bleAdapter.getBluetoothLeScanner();
+        mOnBleScanListener = onBleScanListener;
+        mHandler.postDelayed(() -> {
+            mScanning = false;
+            bleAdapter.stopLeScan(startLeScan);
+        }, 10000);
+
+        mScanning = true;
+        bleAdapter.startLeScan(startLeScan);
+        /*bleScanner = bleAdapter.getBluetoothLeScanner();
         bleScanner.startScan(new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
@@ -82,7 +110,11 @@ public class PooaiBleManager2 {
         });
         if (onBleScanListener != null) {
             onBleScanListener.startScan();
-        }
+        }*/
+    }
+
+    public void stopScan() {
+
     }
 
     public void connectDevice(BluetoothDevice bluetoothDevice) {
@@ -101,7 +133,7 @@ public class PooaiBleManager2 {
             if (newState == 2) {
                 Log.d(TAG, "马桶已连接");
                 gatt.discoverServices();
-            }else if (newState == 0) {
+            } else if (newState == 0) {
                 Log.d(TAG, "马桶断开连接");
                 gatt.disconnect();
                 gatt.close();
