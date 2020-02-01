@@ -79,29 +79,6 @@ public class PooaiBleManager {
 
                 });
         compositeDisposable.add(mScanDisposable);
-
-        TimerTaskUtil.timerRx(10000, new TimerTaskUtil.OnRxListener() {
-            @Override
-            public void onNext(Long aLong) {
-
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-
-            @Override
-            public void onComplete() {
-                stopScanDevice();
-            }
-
-            @Override
-            public void onSubscribe(Disposable disposable) {
-
-            }
-        });
-
     }
 
     public void stopScanDevice() {
@@ -129,9 +106,12 @@ public class PooaiBleManager {
                 .doFinally(this::stopConnectDevice)
                 .subscribe(bluetoothGattCharacteristic -> {
                     //连接成功
+                    Log.d(TAG,"---连接成功---");
                 }, throwable -> {
+                    Log.d(TAG,"---连接失败---");
                     //连接失败
                 }, () -> {
+                    Log.d(TAG,"---连接断开---");
                     //连接断开
                 });
         compositeDisposable.add(mConnectionDisposable);

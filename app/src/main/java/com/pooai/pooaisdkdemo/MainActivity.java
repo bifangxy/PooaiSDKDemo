@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
     private List<PooaiBleDevice> mPooaiBleDeviceList;
 
+    private  PooaiBleManager pooaiBleManager;
+
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -64,13 +66,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         mPooaiBleDeviceList = new ArrayList<>();
-        PooaiBleDevice pooaiBleDevice = new PooaiBleDevice();
-        pooaiBleDevice.setName("pooai08");
-        pooaiBleDevice.setMacAddress("adsdasdasdas");
-        mPooaiBleDeviceList.add(pooaiBleDevice);
-        mBleApdater = new BleApdater(mPooaiBleDeviceList);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mBleApdater);
+
 
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -79,6 +75,12 @@ public class MainActivity extends AppCompatActivity {
             // 申请授权。
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
+        mBleApdater = new BleApdater(mPooaiBleDeviceList);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setAdapter(mBleApdater);
+
+
+        pooaiBleManager = new PooaiBleManager();
         initListener();
     }
 
@@ -87,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
         mBleApdater.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-
+                PooaiBleDevice pooaiBleDevice = mBleApdater.getData().get(position);
+                pooaiBleManager.connectDevice(pooaiBleDevice.getMacAddress());
             }
         });
     }
