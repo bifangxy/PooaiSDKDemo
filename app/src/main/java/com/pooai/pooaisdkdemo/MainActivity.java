@@ -20,6 +20,7 @@ import android.view.View;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.pooai.blesdk.PooaiBleManager;
 import com.pooai.blesdk.PooaiDetectionManager;
+import com.pooai.blesdk.PooaiToiletCommandManager;
 import com.pooai.blesdk.data.PooaiBleDevice;
 import com.pooai.blesdk.data.PooaiOvulationData;
 import com.pooai.blesdk.data.PooaiPregnancyData;
@@ -109,5 +110,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @OnClick(R.id.bt_send_command)
+    public void sendCommand(){
+        PooaiToiletCommandManager.getInstance().startHeartbeat();
     }
 }

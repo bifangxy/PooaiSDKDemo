@@ -128,6 +128,7 @@ public class PooaiBleManager {
                 .doFinally(this::stopConnectDevice)
                 .subscribe(bluetoothGattCharacteristic -> {
                     //连接成功
+                    openNotify();
                     Log.d(TAG,"---连接成功---");
                 }, throwable -> {
                     Log.d(TAG,"---连接失败---");
@@ -161,8 +162,10 @@ public class PooaiBleManager {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             bytes -> {
+                                Log.d(TAG,"--发送成功--");
                                 //write success
                             }, throwable -> {
+                                Log.d(TAG,"--失败--");
                                 //write fail
                             }
                     );
@@ -182,7 +185,6 @@ public class PooaiBleManager {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(bytes -> {
                         ToiletCommandObservable.getInstance().setValue(bytes);
-
                     }, throwable -> {
 
                     });
