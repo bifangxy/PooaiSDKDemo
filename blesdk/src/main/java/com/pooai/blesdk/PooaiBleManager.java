@@ -42,8 +42,9 @@ public class PooaiBleManager {
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-
     private PublishSubject<Boolean> disconnectTriggerSubject = PublishSubject.create();
+
+    private Observable<RxBleConnection> mRxBleConnectionObservable;
 
 
     public PooaiBleManager() {
@@ -121,7 +122,8 @@ public class PooaiBleManager {
             throw new RuntimeException("RxBleDevice can not be null");
         }
         AppEvent.setRxBleDevice(mRxBleDevice);
-        mConnectionDisposable = prepareConnectionObservable()
+        mRxBleConnectionObservable = prepareConnectionObservable();
+        mConnectionDisposable = mRxBleConnectionObservable
                 .flatMapSingle(RxBleConnection::discoverServices)
                 .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(CHARACTERISTIC_UUID))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -156,7 +158,7 @@ public class PooaiBleManager {
 
     public void write(byte[] args) {
         if (isConnected()) {
-            Disposable disposable = prepareConnectionObservable()
+            Disposable disposable = mRxBleConnectionObservable
                     .firstOrError()
                     .flatMap(rxBleConnection -> rxBleConnection.writeCharacteristic(CHARACTERISTIC_UUID, args))
                     .observeOn(AndroidSchedulers.mainThread())
@@ -177,7 +179,7 @@ public class PooaiBleManager {
     //打开通知
     public void openNotify() {
         if (isConnected()) {
-            Disposable disposable = prepareConnectionObservable()
+            Disposable disposable = mRxBleConnectionObservable
                     .flatMap(rxBleConnection -> rxBleConnection.setupNotification(CHARACTERISTIC_UUID))
                     .doOnNext(notificationObservable -> {
 
