@@ -3,6 +3,8 @@ package com.pooai.pooaisdkdemo;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -13,12 +15,18 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.pooai.blesdk.PooaiBleManager;
 import com.pooai.blesdk.PooaiDetectionManager;
+import com.pooai.blesdk.data.PooaiBleDevice;
 import com.pooai.blesdk.data.PooaiOvulationData;
 import com.pooai.blesdk.data.PooaiPregnancyData;
 import com.pooai.blesdk.service.PooaiToiletService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,7 +35,14 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    @BindView(R.id.rv_ble_device)
+    RecyclerView mRecyclerView;
+
     private PooaiToiletService mPooaiToiletService;
+
+    private BleApdater mBleApdater;
+
+    private List<PooaiBleDevice> mPooaiBleDeviceList;
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -47,6 +62,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        mPooaiBleDeviceList = new ArrayList<>();
+        PooaiBleDevice pooaiBleDevice = new PooaiBleDevice();
+        pooaiBleDevice.setName("pooai08");
+        pooaiBleDevice.setMacAddress("adsdasdasdas");
+        mPooaiBleDeviceList.add(pooaiBleDevice);
+        mBleApdater = new BleApdater(mPooaiBleDeviceList);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setAdapter(mBleApdater);
 
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -55,43 +78,32 @@ public class MainActivity extends AppCompatActivity {
             // 申请授权。
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
+        initListener();
+    }
+
+    private void initListener() {
+
+        mBleApdater.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+
+            }
+        });
     }
 
     @OnClick(R.id.bt_start_service)
     public void startService() {
-
-        PooaiDetectionManager pooaiDetectionManager  = new PooaiDetectionManager();
-        /*pooaiDetectionManager.startOvulationTest(new PooaiDetectionManager.OnDetectionListener<PooaiOvulationData>() {
+        PooaiBleManager pooaiBleManager = new PooaiBleManager();
+        pooaiBleManager.scanDevice(new PooaiBleManager.OnBleScanListener() {
             @Override
-            public void start() {
-                Log.d(TAG,"检测开始");
+            public void scanResult(PooaiBleDevice pooaiBleDevice) {
+                Log.d(TAG, "deviceName = " + pooaiBleDevice.getName());
+                if (!mPooaiBleDeviceList.contains(pooaiBleDevice)) {
+                    mPooaiBleDeviceList.add(pooaiBleDevice);
+                    mBleApdater.notifyDataSetChanged();
+                }
             }
+        });
 
-            @Override
-            public void complete(PooaiOvulationData data) {
-                Log.d(TAG,"检测完成 "+data.ovulationResult);
-            }
-
-            @Override
-            public void cancel() {
-
-            }
-
-            @Override
-            public void error(Throwable throwable) {
-
-            }
-        });*/
-
-//        pooaiDetectionManager.startHeartTest();
-//        PooaiBleManager pooaiBleManager = new PooaiBleManager();
-//        pooaiBleManager.scanDevice(new PooaiBleManager.OnBleScanListener() {
-//            @Override
-//            public void scanResult(String deviceName) {
-//                Log.d(TAG, "deviceName = " + deviceName);
-//            }
-//        });
-//        Intent intent = new Intent(this, PooaiToiletService.class);
-//        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 }

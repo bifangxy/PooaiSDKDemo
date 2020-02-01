@@ -1,6 +1,6 @@
 package com.pooai.blesdk.observer;
 
-import com.pooai.blesdk.PooaiToiletHeartbeatManager;
+import com.pooai.blesdk.PooaiToiletCommandManager;
 import com.pooai.blesdk.data.ToiletRegisterData;
 import com.pooai.blesdk.data.ToiletState;
 import com.pooai.blesdk.util.CRCStuff;
@@ -27,7 +27,7 @@ public class ControlParamsObservable extends Observable {
 
 
     public void setValue(byte[] values) {
-        ToiletState toiletState = PooaiToiletHeartbeatManager.getInstance().getToiletState();
+        ToiletState toiletState = PooaiToiletCommandManager.getInstance().getToiletState();
         if (toiletState != ToiletState.CONTROL) {
             return;
         }

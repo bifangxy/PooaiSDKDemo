@@ -7,6 +7,7 @@ import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDevice;
 import com.polidea.rxandroidble2.scan.ScanResult;
 import com.polidea.rxandroidble2.scan.ScanSettings;
+import com.pooai.blesdk.data.PooaiBleDevice;
 import com.pooai.blesdk.observer.ToiletCommandObservable;
 
 import java.util.UUID;
@@ -64,7 +65,10 @@ public class PooaiBleManager {
                 .doFinally(this::stopScanDevice)
                 .subscribe((ScanResult scanResult) -> {
                     if (onBleScanListener != null) {
-                        onBleScanListener.scanResult(scanResult.getBleDevice().getName());
+                        PooaiBleDevice pooaiBleDevice = new PooaiBleDevice();
+                        pooaiBleDevice.setMacAddress(scanResult.getBleDevice().getMacAddress());
+                        pooaiBleDevice.setName(scanResult.getBleDevice().getName());
+                        onBleScanListener.scanResult(pooaiBleDevice);
                     }
                 }, throwable -> {
 
@@ -80,11 +84,11 @@ public class PooaiBleManager {
     }
 
 
-    public void connectDevice(ScanResult scanResult) {
-        if (scanResult == null) {
+    public void connectDevice(String macAddress) {
+        if (macAddress == null) {
             throw new RuntimeException("ScanResult can not be null");
         }
-        mRxBleDevice = scanResult.getBleDevice();
+        mRxBleDevice = mRxBleClient.getBleDevice(macAddress);
         if (mRxBleDevice == null) {
             throw new RuntimeException("RxBleDevice can not be null");
         }
@@ -93,7 +97,7 @@ public class PooaiBleManager {
                 .flatMapSingle(RxBleConnection::discoverServices)
                 .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(CHARACTERISTIC_UUID))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doFinally(this::stopScanDevice)
+                .doFinally(this::stopConnectDevice)
                 .subscribe(bluetoothGattCharacteristic -> {
                     //连接成功
                 }, throwable -> {
@@ -181,7 +185,7 @@ public class PooaiBleManager {
     }
 
     public interface OnBleScanListener {
-        void scanResult(String deviceName);
+        void scanResult(PooaiBleDevice pooaiBleDevice);
     }
 
     public interface OnBleConnectStateListener {

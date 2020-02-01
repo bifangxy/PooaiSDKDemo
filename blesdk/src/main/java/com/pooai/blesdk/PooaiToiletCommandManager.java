@@ -15,11 +15,11 @@ import io.reactivex.disposables.Disposable;
 
 /**
  * 作者：created by xieying on 2020-01-12 18:00
- * 功能 马桶心跳管理
+ * 功能 马桶命令管理
  */
-public class PooaiToiletHeartbeatManager {
+public class PooaiToiletCommandManager {
 
-    private static final String TAG = PooaiToiletHeartbeatManager.class.getSimpleName();
+    private static final String TAG = PooaiToiletCommandManager.class.getSimpleName();
 
     private ToiletState mToiletState = ToiletState.CONTROL;
 
@@ -35,15 +35,15 @@ public class PooaiToiletHeartbeatManager {
 
 
     private static class SingletonHolder {
-        private static final PooaiToiletHeartbeatManager INSTANCE = new PooaiToiletHeartbeatManager();
+        private static final PooaiToiletCommandManager INSTANCE = new PooaiToiletCommandManager();
     }
 
-    public static PooaiToiletHeartbeatManager getInstance() {
-        return PooaiToiletHeartbeatManager.SingletonHolder.INSTANCE;
+    public static PooaiToiletCommandManager getInstance() {
+        return PooaiToiletCommandManager.SingletonHolder.INSTANCE;
     }
 
 
-    public PooaiToiletHeartbeatManager() {
+    public PooaiToiletCommandManager() {
         mPooaiBleManager = new PooaiBleManager();
         mToiletCommandLinkedList = new LinkedList<>();
     }

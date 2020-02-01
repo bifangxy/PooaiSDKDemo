@@ -8,11 +8,23 @@ import android.bluetooth.le.ScanResult;
  */
 public class PooaiBleDevice {
 
-    ScanResult mScanResult;
-
     private String name;
 
     private String macAddress;
 
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
 }

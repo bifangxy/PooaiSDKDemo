@@ -48,7 +48,7 @@ public class PooaiDetectionManager {
 
     //切换成为检测模式(注意 开始检测前需要切换成检测模式)
     public static void switchDetectionMode() {
-        PooaiToiletHeartbeatManager.getInstance().changeToiletState(ToiletState.DETECTION);
+        PooaiToiletCommandManager.getInstance().changeToiletState(ToiletState.DETECTION);
     }
 
     //开始尿检
@@ -90,7 +90,7 @@ public class PooaiDetectionManager {
             mUrineDispose.dispose();
             mUrineDispose = null;
             ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_DOOR, 2);
-            PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+            PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
         }
     }
 
@@ -102,7 +102,7 @@ public class PooaiDetectionManager {
 
     private void sendStartUrineCommand() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_TEST1, 1);
-        PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+        PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }
 
     private PooaiUrineData getUrineTestResult() {
@@ -181,7 +181,7 @@ public class PooaiDetectionManager {
             mPregnancyDispose.dispose();
             mPregnancyDispose = null;
             ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_DOOR, 4);
-            PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+            PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
         }
     }
 
@@ -203,12 +203,12 @@ public class PooaiDetectionManager {
 
     private void sendStartPregnancyCommand() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_TEST1, 2);
-        PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+        PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }
 
     private void sendSecondPregnancyCommand() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_TEST1, 39);
-        PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+        PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }
 
     private boolean isPregnancyFirstStepFinish() {
@@ -274,7 +274,7 @@ public class PooaiDetectionManager {
             mPregnancyDispose.dispose();
             mPregnancyDispose = null;
             ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_DOOR, 4);
-            PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+            PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
         }
     }
 
@@ -294,12 +294,12 @@ public class PooaiDetectionManager {
 
     private void sendStartOvulationCommand() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_TEST1, 3);
-        PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+        PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }
 
     private void sendSecondOvulationCommand() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_TEST1, 39);
-        PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+        PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }
 
     private boolean isOvulationFirstStepFinish() {
@@ -314,19 +314,19 @@ public class PooaiDetectionManager {
     //打开尿检检测槽
     public static void openUrineTank() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_DOOR, 1);
-        PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+        PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }
 
     //打开孕检排卵检测槽
     public static void openPregnancyAndOvulationTank() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_DOOR, 3);
-        PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+        PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }
 
     //关闭检测槽
     public static void closeDetectionTank() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_DOOR, 2);
-        PooaiToiletHeartbeatManager.getInstance().addToiletCommand(toiletCommand);
+        PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }
 
     /**
@@ -338,14 +338,14 @@ public class PooaiDetectionManager {
         if (mHeartDispose != null && !mHeartDispose.isDisposed()) {
             return;
         }
-        PooaiToiletHeartbeatManager.getInstance().changeToiletState(ToiletState.DETECTION);
-        PooaiToiletHeartbeatManager.getInstance().addToiletCommand(START_HEART_TEST);
+        PooaiToiletCommandManager.getInstance().changeToiletState(ToiletState.DETECTION);
+        PooaiToiletCommandManager.getInstance().addToiletCommand(START_HEART_TEST);
         mHeartDispose = Observable
                 .create((ObservableOnSubscribe<byte[]>) emitter ->
                         HeartParamsObservable.getInstance().setOnHeartReceiverListener(emitter::onNext))
                 .doOnNext(pooaiHeartData -> conversionHeartData(pooaiHeartData, onHeartDetectionListener))
                 .doOnDispose(() -> {
-                    PooaiToiletHeartbeatManager.getInstance().addToiletCommand(STOP_HEAR_TEST);
+                    PooaiToiletCommandManager.getInstance().addToiletCommand(STOP_HEAR_TEST);
                     onHeartDetectionListener.complete();
                 })
                 .subscribe();
@@ -409,7 +409,7 @@ public class PooaiDetectionManager {
         if (mHeartDispose != null && !mHeartDispose.isDisposed()) {
             mHeartDispose.dispose();
             mHeartDispose = null;
-            PooaiToiletHeartbeatManager.getInstance().addToiletCommand(STOP_HEAR_TEST);
+            PooaiToiletCommandManager.getInstance().addToiletCommand(STOP_HEAR_TEST);
         }
     }
 
