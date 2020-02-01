@@ -165,6 +165,7 @@ public class PooaiBleManager {
                                 Log.d(TAG,"--发送成功--");
                                 //write success
                             }, throwable -> {
+                                throwable.printStackTrace();
                                 Log.d(TAG,"--失败--");
                                 //write fail
                             }

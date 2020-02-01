@@ -52,7 +52,7 @@ public class PooaiToiletCommandManager {
         if (mTask != null) {
             return;
         }
-        mTask = TimerTaskUtil.intervalRx(0, 300, new TimerTaskUtil.OnRxListener() {
+        mTask = TimerTaskUtil.intervalRx(0, 3000, new TimerTaskUtil.OnRxListener() {
             @Override
             public void onNext(Long aLong) {
                 if (mToiletState == ToiletState.HEART) {
