@@ -122,12 +122,12 @@ public class PooaiBleManager {
             throw new RuntimeException("RxBleDevice can not be null");
         }
         AppEvent.setRxBleDevice(mRxBleDevice);
+
         mRxBleConnectionObservable = prepareConnectionObservable();
         mConnectionDisposable = mRxBleConnectionObservable
                 .flatMapSingle(RxBleConnection::discoverServices)
                 .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(CHARACTERISTIC_UUID))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doFinally(this::stopConnectDevice)
                 .subscribe(bluetoothGattCharacteristic -> {
                     //连接成功
                     openNotify();
@@ -140,6 +140,7 @@ public class PooaiBleManager {
                     //连接断开
                 });
         compositeDisposable.add(mConnectionDisposable);
+
 
     }
 

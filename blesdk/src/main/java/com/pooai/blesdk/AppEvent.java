@@ -17,7 +17,10 @@ public class AppEvent {
 
     private static RxBleDevice mRxBleDevice;
 
+    private static Context mContext;
+
     public static void init(Context context){
+        mContext = context;
         mRxBleClient = RxBleClient.create(context);
         RxBleClient.updateLogOptions(new LogOptions.Builder()
                 .setLogLevel(LogConstants.INFO)
@@ -41,5 +44,9 @@ public class AppEvent {
 
     public static void setRxBleDevice(RxBleDevice mRxBleDevice) {
         AppEvent.mRxBleDevice = mRxBleDevice;
+    }
+
+    public static Context getContext() {
+        return mContext;
     }
 }

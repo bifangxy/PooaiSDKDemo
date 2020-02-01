@@ -1,5 +1,6 @@
 package com.pooai.pooaisdkdemo;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -7,11 +8,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -19,6 +22,7 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.pooai.blesdk.PooaiBleManager;
+import com.pooai.blesdk.PooaiBleManager2;
 import com.pooai.blesdk.PooaiDetectionManager;
 import com.pooai.blesdk.PooaiToiletCommandManager;
 import com.pooai.blesdk.data.PooaiBleDevice;
@@ -44,9 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
     private BleApdater mBleApdater;
 
-    private List<PooaiBleDevice> mPooaiBleDeviceList;
+    private List<BluetoothDevice> mPooaiBleDeviceList;
 
-    private  PooaiBleManager pooaiBleManager;
+    private PooaiBleManager2 pooaiBleManager2;
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -81,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mBleApdater);
 
 
-        pooaiBleManager = new PooaiBleManager();
+        pooaiBleManager2 = new PooaiBleManager2();
+        pooaiBleManager2.initBLE();
         initListener();
     }
 
@@ -90,15 +95,16 @@ public class MainActivity extends AppCompatActivity {
         mBleApdater.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                PooaiBleDevice pooaiBleDevice = mBleApdater.getData().get(position);
-                pooaiBleManager.connectDevice(pooaiBleDevice.getMacAddress());
+                BluetoothDevice pooaiBleDevice = mBleApdater.getData().get(position);
+                pooaiBleManager2.connectDevice(pooaiBleDevice);
             }
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @OnClick(R.id.bt_start_service)
     public void startService() {
-        PooaiBleManager pooaiBleManager = new PooaiBleManager();
+        /*PooaiBleManager pooaiBleManager = new PooaiBleManager();
         pooaiBleManager.scanDevice(new PooaiBleManager.OnBleScanListener() {
             @Override
             public void scanResult(PooaiBleDevice pooaiBleDevice) {
@@ -108,12 +114,27 @@ public class MainActivity extends AppCompatActivity {
                     mBleApdater.notifyDataSetChanged();
                 }
             }
+        });*/
+
+        pooaiBleManager2.startScan(new PooaiBleManager2.OnBleScanListener() {
+            @Override
+            public void scanResult(BluetoothDevice bluetoothDevice) {
+                if (!mPooaiBleDeviceList.contains(bluetoothDevice)) {
+                    mPooaiBleDeviceList.add(bluetoothDevice);
+                    mBleApdater.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void startScan() {
+
+            }
         });
 
     }
 
     @OnClick(R.id.bt_send_command)
-    public void sendCommand(){
+    public void sendCommand() {
         PooaiToiletCommandManager.getInstance().startHeartbeat();
     }
 }

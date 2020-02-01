@@ -27,7 +27,7 @@ public class PooaiToiletCommandManager {
 
     private int startAddress = 0x01;
 
-    private PooaiBleManager mPooaiBleManager;
+    private PooaiBleManager2 mPooaiBleManager;
 
     private TimerTaskUtil.Task mTask;
 
@@ -44,7 +44,7 @@ public class PooaiToiletCommandManager {
 
 
     public PooaiToiletCommandManager() {
-        mPooaiBleManager = new PooaiBleManager();
+        mPooaiBleManager = new PooaiBleManager2();
         mToiletCommandLinkedList = new LinkedList<>();
     }
 
