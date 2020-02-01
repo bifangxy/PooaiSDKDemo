@@ -9,6 +9,7 @@ import com.polidea.rxandroidble2.scan.ScanResult;
 import com.polidea.rxandroidble2.scan.ScanSettings;
 import com.pooai.blesdk.data.PooaiBleDevice;
 import com.pooai.blesdk.observer.ToiletCommandObservable;
+import com.pooai.blesdk.util.TimerTaskUtil;
 
 import java.util.UUID;
 
@@ -56,6 +57,10 @@ public class PooaiBleManager {
      * @param onBleScanListener
      */
     public void scanDevice(OnBleScanListener onBleScanListener) {
+        if (mScanDisposable != null) {
+            return;
+        }
+        Log.d(TAG, "---开始扫描---");
         mScanDisposable = mRxBleClient.scanBleDevices(
                 new ScanSettings.Builder()
                         .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -74,10 +79,34 @@ public class PooaiBleManager {
 
                 });
         compositeDisposable.add(mScanDisposable);
+
+        TimerTaskUtil.timerRx(10, new TimerTaskUtil.OnRxListener() {
+            @Override
+            public void onNext(Long aLong) {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                stopScanDevice();
+            }
+
+            @Override
+            public void onSubscribe(Disposable disposable) {
+
+            }
+        });
+
     }
 
     public void stopScanDevice() {
         if (mScanDisposable != null) {
+            Log.d(TAG, "---停止扫描---");
             mScanDisposable.dispose();
             mScanDisposable = null;
         }
