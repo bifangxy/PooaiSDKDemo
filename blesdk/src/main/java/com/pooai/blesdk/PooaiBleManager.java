@@ -80,7 +80,7 @@ public class PooaiBleManager {
                 });
         compositeDisposable.add(mScanDisposable);
 
-        TimerTaskUtil.timerRx(10, new TimerTaskUtil.OnRxListener() {
+        TimerTaskUtil.timerRx(10000, new TimerTaskUtil.OnRxListener() {
             @Override
             public void onNext(Long aLong) {
 
