@@ -81,6 +81,9 @@ public class PooaiBleManager {
         if (mScanning) {
             return;
         }
+        if (bleAdapter == null) {
+            return;
+        }
         mOnBleScanListener = onBleScanListener;
         TimerTaskUtil.timerRx(10000, new TimerTaskUtil.OnRxListener() {
             @Override
@@ -111,6 +114,9 @@ public class PooaiBleManager {
     }
 
     public void stopScan() {
+        if (bleAdapter == null) {
+            return;
+        }
         bleAdapter.stopLeScan(startLeScan);
         mScanning = false;
         if (mOnBleScanListener != null) {
@@ -119,6 +125,9 @@ public class PooaiBleManager {
     }
 
     public void connectDevice(BluetoothDevice bluetoothDevice) {
+        if (bluetoothDevice == null) {
+            return;
+        }
         if (bleGatt != null) {
             bleGatt.disconnect();
             bleGatt.close();
@@ -127,7 +136,7 @@ public class PooaiBleManager {
         bleGatt = bluetoothDevice.connectGatt(AppEvent.getContext(), false, bleGattCallback);
     }
 
-    public void disconnectedDevice(){
+    public void disconnectedDevice() {
         if (bleGatt != null) {
             bleGatt.disconnect();
             bleGatt.close();

@@ -49,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
 
     private PooaiControlManager mPooaiControlManager;
 
+    private boolean isUrine;
+
+    private boolean isPregnancy;
+
+    private boolean isOvulation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private void initListener() {
         mBleAdapter.setOnItemClickListener((adapter, view, position) -> {
             BluetoothDevice pooaiBleDevice = mBleAdapter.getData().get(position);
+            //第一次连接需要点击两次才能连接上，需要解决
             mPooaiBleManager.connectDevice(pooaiBleDevice);
         });
     }
@@ -113,23 +120,29 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_urine)
     public void startUrine() {
+        if (isUrine) {
+            mPooaiDetectionManager.stopUrineTest();
+            return;
+        }
         mPooaiDetectionManager.switchDetectionMode();
         mPooaiDetectionManager.openUrineTank();
         mPooaiDetectionManager.startUrineTest(new PooaiDetectionManager.OnDetectionListener<PooaiUrineData>() {
             @Override
             public void start() {
                 Log.d(TAG, "---开始尿检---");
+                isUrine = true;
             }
 
             @Override
             public void complete(PooaiUrineData data) {
+                isUrine = false;
                 Log.d(TAG, "---检测完成---");
                 Log.d(TAG, "---data---" + data.sourceData);
             }
 
             @Override
             public void cancel() {
-
+                isUrine = false;
             }
 
             @Override
@@ -141,23 +154,29 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_pregnancy)
     public void startPregnancy() {
+        if (isPregnancy) {
+            mPooaiDetectionManager.stopPregnancyTest();
+            return;
+        }
         mPooaiDetectionManager.switchDetectionMode();
         mPooaiDetectionManager.openPregnancyAndOvulationTank();
         mPooaiDetectionManager.startPregnancyTest(new PooaiDetectionManager.OnDetectionListener<PooaiPregnancyData>() {
             @Override
             public void start() {
+                isPregnancy = true;
                 Log.d(TAG, "---开始孕检---");
             }
 
             @Override
             public void complete(PooaiPregnancyData data) {
+                isPregnancy = false;
                 Log.d(TAG, "---检测完成---");
                 Log.d(TAG, "---data---" + data.pregnancyResult);
             }
 
             @Override
             public void cancel() {
-
+                isPregnancy = false;
             }
 
             @Override
@@ -169,23 +188,29 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_ovulation)
     public void startOvulation() {
+        if (isOvulation) {
+            mPooaiDetectionManager.stopOvulationTest();
+            return;
+        }
         mPooaiDetectionManager.switchDetectionMode();
         mPooaiDetectionManager.openPregnancyAndOvulationTank();
         mPooaiDetectionManager.startOvulationTest(new PooaiDetectionManager.OnDetectionListener<PooaiOvulationData>() {
             @Override
             public void start() {
+                isOvulation = true;
                 Log.d(TAG, "---开始排卵---");
             }
 
             @Override
             public void complete(PooaiOvulationData data) {
+                isOvulation = false;
                 Log.d(TAG, "---检测完成---");
                 Log.d(TAG, "---data---" + data.ovulationResult);
             }
 
             @Override
             public void cancel() {
-
+                isOvulation = false;
             }
 
             @Override
