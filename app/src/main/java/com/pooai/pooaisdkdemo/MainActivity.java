@@ -17,6 +17,7 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.pooai.blesdk.PooaiBleManager;
+import com.pooai.blesdk.PooaiControlManager;
 import com.pooai.blesdk.PooaiDetectionManager;
 import com.pooai.blesdk.PooaiToiletCommandManager;
 import com.pooai.blesdk.data.PooaiOvulationData;
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
     private PooaiBleManager mPooaiBleManager;
 
+    private PooaiControlManager mPooaiControlManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mPooaiBleManager = PooaiBleManager.getInstance();
+        mPooaiControlManager = PooaiControlManager.getInstance();
         mPooaiBleManager.initBLE();
         initListener();
     }
@@ -208,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void heartRate(int heartRate, int errorType) {
-                Log.d(TAG, "heartData =" + heartRate+"  errorType = "+errorType);
+                Log.d(TAG, "heartData =" + heartRate + "  errorType = " + errorType);
             }
 
             @Override
@@ -219,8 +223,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.bt_stop_heart)
-    public void stopHeart(){
+    public void stopHeart() {
         PooaiDetectionManager pooaiDetectionManager = PooaiDetectionManager.getInstance();
         pooaiDetectionManager.stopHeartTest();
+    }
+
+    @OnClick(R.id.bt_open_light)
+    public void openLight() {
+        mPooaiControlManager.switchControlMode();
+        mPooaiControlManager.openLight();
+    }
+
+    @OnClick(R.id.bt_close_light)
+    public void closeLight() {
+        mPooaiControlManager.switchControlMode();
+        mPooaiControlManager.closeLight();
+    }
+
+    @OnClick(R.id.bt_open_flip)
+    public void openFlip() {
+        mPooaiControlManager.switchControlMode();
+        mPooaiControlManager.openAutoFlip();
+    }
+
+    @OnClick(R.id.bt_close_light)
+    public void closeFlip() {
+        mPooaiControlManager.switchControlMode();
+        mPooaiControlManager.closeAutoFlip();
     }
 }
