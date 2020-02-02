@@ -76,6 +76,11 @@ public class TimerTaskUtil {
         void onSubscribe(Disposable disposable);
     }
 
+    public interface onSimpleRxListener extends OnRxListener{
+        @Override
+        void onComplete();
+    }
+
     public static class Task {
         private Disposable mDisposable;
 

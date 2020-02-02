@@ -1,86 +1,85 @@
 package com.pooai.blesdk;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
+import android.bluetooth.BluetoothManager;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
-import com.polidea.rxandroidble2.RxBleClient;
-import com.polidea.rxandroidble2.RxBleConnection;
-import com.polidea.rxandroidble2.RxBleDevice;
-import com.polidea.rxandroidble2.scan.ScanResult;
-import com.polidea.rxandroidble2.scan.ScanSettings;
-import com.pooai.blesdk.data.PooaiBleDevice;
 import com.pooai.blesdk.observer.ToiletCommandObservable;
 import com.pooai.blesdk.util.TimerTaskUtil;
 
-import java.util.UUID;
+import java.util.Iterator;
+import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.subjects.PublishSubject;
 
 /**
- * 作者：created by xieying on 2020-01-12 15:16
- * 功能：蓝牙操作管理类
+ * 作者：created by xieying on 2020-02-01 23:24
+ * 功能：
  */
 public class PooaiBleManager {
     private static final String TAG = PooaiBleManager.class.getSimpleName();
+    //UUID
+    private static final String UUID_SERVER = "0000ffe0-0000-1000-8000-00805f9b34fb";
 
-    private static final String SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
+    private static final String UUID_NOTIFY = "0000ffe1-0000-1000-8000-00805f9b34fb";
 
-    private static final UUID CHARACTERISTIC_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
+    private BluetoothAdapter bleAdapter;
 
-    private RxBleClient mRxBleClient;
+    private BluetoothGatt bleGatt;
 
-    private RxBleDevice mRxBleDevice;
+    private BluetoothGattCharacteristic bleGattCharacteristic;
 
-    private Disposable mScanDisposable;
+    private OnBleScanListener mOnBleScanListener;
 
-    private Disposable mConnectionDisposable;
+    private boolean mScanning;
 
-    private Disposable mConnectionStateDisposable;
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-    private PublishSubject<Boolean> disconnectTriggerSubject = PublishSubject.create();
-
-    private Observable<RxBleConnection> mRxBleConnectionObservable;
-
-
-    public PooaiBleManager() {
-        mRxBleClient = AppEvent.getRxBleClient();
-        mRxBleDevice = AppEvent.getRxBleDevice();
+    private static class SingletonHolder {
+        private static final PooaiBleManager INSTANCE = new PooaiBleManager();
     }
 
-    /**
-     * 调用此方法前应获取打开蓝牙并获取权限
-     *
-     * @param onBleScanListener
-     */
-    public void scanDevice(OnBleScanListener onBleScanListener) {
-        if (mScanDisposable != null) {
+    public static PooaiBleManager getInstance() {
+        return PooaiBleManager.SingletonHolder.INSTANCE;
+    }
+
+    private BluetoothAdapter.LeScanCallback startLeScan = new BluetoothAdapter.LeScanCallback() {
+        @Override
+        public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+            Log.d(TAG, "deviceName = " + device.getName());
+            if (device.getName() == null) {
+                return;
+            }
+            if (mOnBleScanListener != null) {
+                mOnBleScanListener.scanResult(device);
+            }
+        }
+    };
+
+
+    public boolean initBLE() {
+        if (!AppEvent.getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            return false;
+        }
+        final BluetoothManager bluetoothManager = (BluetoothManager) AppEvent.getContext().getSystemService(android.content.Context.BLUETOOTH_SERVICE);
+        bleAdapter = bluetoothManager.getAdapter();
+        return bleAdapter != null;
+    }
+
+    public boolean isBleOpen() {
+        return bleAdapter.isEnabled();
+    }
+
+    public void startScan(OnBleScanListener onBleScanListener) {
+        if(mScanning){
             return;
         }
-        Log.d(TAG, "---开始扫描---");
-        mScanDisposable = mRxBleClient.scanBleDevices(
-                new ScanSettings.Builder()
-                        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                        .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                        .build())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doFinally(this::stopScanDevice)
-                .subscribe((ScanResult scanResult) -> {
-                    if (onBleScanListener != null) {
-                        PooaiBleDevice pooaiBleDevice = new PooaiBleDevice();
-                        pooaiBleDevice.setMacAddress(scanResult.getBleDevice().getMacAddress());
-                        pooaiBleDevice.setName(scanResult.getBleDevice().getName());
-                        onBleScanListener.scanResult(pooaiBleDevice);
-                    }
-                }, throwable -> {
-
-                });
-        compositeDisposable.add(mScanDisposable);
-
+        mOnBleScanListener = onBleScanListener;
         TimerTaskUtil.timerRx(10000, new TimerTaskUtil.OnRxListener() {
             @Override
             public void onNext(Long aLong) {
@@ -94,7 +93,7 @@ public class PooaiBleManager {
 
             @Override
             public void onComplete() {
-                stopScanDevice();
+                stopScan();
             }
 
             @Override
@@ -102,146 +101,98 @@ public class PooaiBleManager {
 
             }
         });
+        mScanning = true;
+        bleAdapter.startLeScan(startLeScan);
     }
 
-    public void stopScanDevice() {
-        if (mScanDisposable != null) {
-            Log.d(TAG, "---停止扫描---");
-            mScanDisposable.dispose();
-            mScanDisposable = null;
+    public void stopScan() {
+        bleAdapter.stopLeScan(startLeScan);
+        mScanning = false;
+    }
+
+    public void connectDevice(BluetoothDevice bluetoothDevice) {
+        if (bleGatt != null) {
+            bleGatt.disconnect();
+            bleGatt.close();
+            bleGatt = null;
         }
+        bleGatt = bluetoothDevice.connectGatt(AppEvent.getContext(), false, bleGattCallback);
     }
 
+    BluetoothGattCallback bleGattCallback = new BluetoothGattCallback() {
+        @Override
+        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+            super.onConnectionStateChange(gatt, status, newState);
+            if (newState == 2) {
+                Log.d(TAG, "马桶已连接");
+                gatt.discoverServices();
+            } else if (newState == 0) {
+                Log.d(TAG, "马桶断开连接");
+                gatt.disconnect();
+                gatt.close();
+            }
 
-    public void connectDevice(String macAddress) {
-        if (macAddress == null) {
-            throw new RuntimeException("ScanResult can not be null");
         }
-        mRxBleDevice = mRxBleClient.getBleDevice(macAddress);
-        if (mRxBleDevice == null) {
-            throw new RuntimeException("RxBleDevice can not be null");
+
+        @Override
+        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            super.onServicesDiscovered(gatt, status);
+            findService(gatt.getServices());
         }
-        AppEvent.setRxBleDevice(mRxBleDevice);
 
-        mRxBleConnectionObservable = prepareConnectionObservable();
-        mConnectionDisposable = mRxBleConnectionObservable
-                .flatMapSingle(RxBleConnection::discoverServices)
-                .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(CHARACTERISTIC_UUID))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bluetoothGattCharacteristic -> {
-                    //连接成功
-                    openNotify();
-                    Log.d(TAG,"---连接成功---");
-                }, throwable -> {
-                    Log.d(TAG,"---连接失败---");
-                    //连接失败
-                }, () -> {
-                    Log.d(TAG,"---连接断开---");
-                    //连接断开
-                });
-        compositeDisposable.add(mConnectionDisposable);
-
-
-    }
-
-    //停止连接
-    public void stopConnectDevice() {
-        if (mConnectionDisposable != null) {
-            mConnectionDisposable.dispose();
-            mConnectionDisposable = null;
+        @Override
+        public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            super.onCharacteristicChanged(gatt, characteristic);
+            byte[] arrayOfbyte = characteristic.getValue();
+            ToiletCommandObservable.getInstance().setValue(arrayOfbyte);
         }
-    }
+    };
 
-    //断开连接
-    public void disconnectDevice(RxBleDevice bleDevice) {
-        disconnectTriggerSubject.onNext(true);
-    }
-
-    public void write(byte[] args) {
-        if (isConnected()) {
-            Disposable disposable = mRxBleConnectionObservable
-                    .firstOrError()
-                    .flatMap(rxBleConnection -> rxBleConnection.writeCharacteristic(CHARACTERISTIC_UUID, args))
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            bytes -> {
-                                Log.d(TAG,"--发送成功--");
-                                //write success
-                            }, throwable -> {
-                                throwable.printStackTrace();
-                                Log.d(TAG,"--失败--");
-                                //write fail
-                            }
-                    );
-            compositeDisposable.add(disposable);
-        }
-    }
-
-    //打开通知
-    public void openNotify() {
-        if (isConnected()) {
-            Disposable disposable = mRxBleConnectionObservable
-                    .flatMap(rxBleConnection -> rxBleConnection.setupNotification(CHARACTERISTIC_UUID))
-                    .doOnNext(notificationObservable -> {
-
-                    })
-                    .flatMap(notificationObservable -> notificationObservable)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(bytes -> {
-                        ToiletCommandObservable.getInstance().setValue(bytes);
-                    }, throwable -> {
-
-                    });
-            compositeDisposable.add(disposable);
-        } else {
-            Log.e(TAG, "device is not connected");
-        }
-    }
-
-    //观察连接状态
-    public void observerConnectState(OnBleConnectStateListener onBleConnectStateListener) {
-        mConnectionStateDisposable = mRxBleDevice.observeConnectionStateChanges()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(rxBleConnectionState -> {
-                    if (onBleConnectStateListener != null) {
-                        onBleConnectStateListener.connectState(rxBleConnectionState);
+    private void findService(List<BluetoothGattService> paramList) {
+        Iterator iterator1 = paramList.iterator();
+        while (iterator1.hasNext()) {
+            BluetoothGattService localBluetoothGattService = (BluetoothGattService) iterator1
+                    .next();
+            if (localBluetoothGattService.getUuid().toString().equalsIgnoreCase(UUID_SERVER)) {
+                List localList = localBluetoothGattService.getCharacteristics();
+                Iterator iterator2 = localList.iterator();
+                while (iterator2.hasNext()) {
+                    BluetoothGattCharacteristic bluetoothGattCharacteristic = (BluetoothGattCharacteristic) iterator2.next();
+                    if (bluetoothGattCharacteristic.getUuid().toString().equalsIgnoreCase(UUID_NOTIFY)) {
+                        bleGattCharacteristic = bluetoothGattCharacteristic;
+                        break;
                     }
-                });
-        compositeDisposable.add(mConnectionStateDisposable);
-    }
-
-    public void stopObserverConnectState() {
-        if (mConnectionStateDisposable != null) {
-            mConnectionStateDisposable.dispose();
-            mConnectionStateDisposable = null;
+                }
+                break;
+            }
+        }
+        boolean isEnableNotification = bleGatt.setCharacteristicNotification(bleGattCharacteristic, true);
+        if (isEnableNotification) {
+            List<BluetoothGattDescriptor> descriptorList = bleGattCharacteristic.getDescriptors();
+            if (descriptorList != null && descriptorList.size() > 0) {
+                for (BluetoothGattDescriptor descriptor : descriptorList) {
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    bleGatt.writeDescriptor(descriptor);
+                }
+            }
         }
     }
 
-    public void clear() {
-        compositeDisposable.clear();
+    public boolean write(byte[] byteArray) {
+        if (bleGattCharacteristic == null) {
+            return false;
+        }
+        if (bleGatt == null) {
+            return false;
+        }
+        bleGattCharacteristic.setValue(byteArray);
+        return bleGatt.writeCharacteristic(bleGattCharacteristic);
     }
 
     public interface OnBleScanListener {
-        void scanResult(PooaiBleDevice pooaiBleDevice);
+        void scanResult(BluetoothDevice bluetoothDevice);
+
+        void startScan();
     }
 
-    public interface OnBleConnectStateListener {
-        void connectState(RxBleConnection.RxBleConnectionState connectionState);
-    }
-
-    private boolean isConnected() {
-        if (mRxBleDevice != null) {
-            return mRxBleDevice.getConnectionState() == RxBleConnection.RxBleConnectionState.CONNECTED;
-        }
-        return false;
-    }
-
-    private Observable<RxBleConnection> prepareConnectionObservable() {
-        if (mRxBleDevice != null) {
-            return mRxBleDevice.establishConnection(false)
-                    .takeUntil(disconnectTriggerSubject);
-        } else {
-            throw new RuntimeException("RxBleDevice can not be null");
-        }
-    }
 }

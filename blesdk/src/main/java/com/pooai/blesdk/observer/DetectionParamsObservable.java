@@ -1,5 +1,7 @@
 package com.pooai.blesdk.observer;
 
+import android.util.Log;
+
 import com.pooai.blesdk.PooaiToiletCommandManager;
 import com.pooai.blesdk.data.ToiletRegisterData;
 import com.pooai.blesdk.data.ToiletState;
@@ -12,6 +14,7 @@ import java.util.Observable;
  * 功能：
  */
 public class DetectionParamsObservable extends Observable {
+    private static final String TAG = DetectionParamsObservable.class.getSimpleName();
 
     private static final int LENGTH = 30;
 
@@ -37,6 +40,7 @@ public class DetectionParamsObservable extends Observable {
                 for (int i = 0; i < LENGTH; i++) {
                     int dat = ((((int) values[3 + 2 * (i)] & 0xff) << 8) | (values[3 + 2 * (i) + 1] & 0xff));
                     ToiletRegisterData.getInstance().setValue(START_ADDRESS + i, dat);
+                    Log.d(TAG, "address = " + (START_ADDRESS + i) + "   value = " + dat);
                 }
             }
         }

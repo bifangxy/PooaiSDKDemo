@@ -25,9 +25,9 @@ public class PooaiToiletCommandManager {
 
     private static final int SCAN_LENGTH = 30;
 
-    private int startAddress = 0x01;
+    private int startAddress = 0x50;
 
-    private PooaiBleManager2 mPooaiBleManager;
+    private PooaiBleManager mPooaiBleManager;
 
     private TimerTaskUtil.Task mTask;
 
@@ -44,7 +44,7 @@ public class PooaiToiletCommandManager {
 
 
     public PooaiToiletCommandManager() {
-        mPooaiBleManager = PooaiBleManager2.getInstance();
+        mPooaiBleManager = PooaiBleManager.getInstance();
         mToiletCommandLinkedList = new LinkedList<>();
     }
 
@@ -115,10 +115,10 @@ public class PooaiToiletCommandManager {
             mToiletState = toiletState;
             switch (mToiletState) {
                 case CONTROL:
-                    startAddress = 0x01;
+                    startAddress = 0x50;
                     break;
                 case DETECTION:
-                    startAddress = 0x50;
+                    startAddress = 0x01;
                     break;
                 case HEART:
                     break;
