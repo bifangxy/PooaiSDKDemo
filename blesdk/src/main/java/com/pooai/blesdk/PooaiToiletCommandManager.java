@@ -26,7 +26,7 @@ public class PooaiToiletCommandManager {
 
     private static final int SCAN_LENGTH = 30;
 
-    private int startAddress = 0x50;
+    private int startAddress = 50;
 
     private PooaiBleManager mPooaiBleManager;
 
@@ -117,10 +117,10 @@ public class PooaiToiletCommandManager {
             mToiletState = toiletState;
             switch (mToiletState) {
                 case CONTROL:
-                    startAddress = 0x50;
+                    startAddress = 50;
                     break;
                 case DETECTION:
-                    startAddress = 0x01;
+                    startAddress = 0;
                     break;
                 case HEART:
                     break;

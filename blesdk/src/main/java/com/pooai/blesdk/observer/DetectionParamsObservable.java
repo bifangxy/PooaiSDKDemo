@@ -40,7 +40,7 @@ public class DetectionParamsObservable extends Observable {
                 for (int i = 0; i < LENGTH; i++) {
                     int dat = ((((int) values[3 + 2 * (i)] & 0xff) << 8) | (values[3 + 2 * (i) + 1] & 0xff));
                     ToiletRegisterData.getInstance().setValue(START_ADDRESS + i, dat);
-//                    Log.d(TAG, "address = " + (START_ADDRESS + i) + "   value = " + dat);
+                    Log.d(TAG, "address = " + (START_ADDRESS + i) + "   value = " + dat);
                 }
             }
         }
