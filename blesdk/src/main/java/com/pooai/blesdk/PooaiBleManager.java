@@ -43,6 +43,8 @@ public class PooaiBleManager {
 
     private boolean mConnected;
 
+    private boolean isFirstConnect = true;
+
     private static class SingletonHolder {
         private static final PooaiBleManager INSTANCE = new PooaiBleManager();
     }
@@ -125,7 +127,7 @@ public class PooaiBleManager {
         }
     }
 
-    public void connectDevice(Context context, BluetoothDevice bluetoothDevice) {
+    public void connectDevice(BluetoothDevice bluetoothDevice) {
         if (bluetoothDevice == null) {
             return;
         }
@@ -134,7 +136,35 @@ public class PooaiBleManager {
             bleGatt = null;
         }
         BluetoothDevice bleDevice = bleAdapter.getRemoteDevice(bluetoothDevice.getAddress());
-        bleGatt = bleDevice.connectGatt(context, false, bleGattCallback);
+        bleGatt = bleDevice.connectGatt(AppEvent.getContext(), false, bleGattCallback);
+        //第一次连接始终会没反应，临时解决方案
+        if (isFirstConnect) {
+            isFirstConnect = false;
+            TimerTaskUtil.timerRx(5000, new TimerTaskUtil.OnRxListener() {
+                @Override
+                public void onNext(Long aLong) {
+
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+
+                }
+
+                @Override
+                public void onComplete() {
+                    if (!isDeviceConnected()) {
+                        disconnectedDevice();
+                        connectDevice(bluetoothDevice);
+                    }
+                }
+
+                @Override
+                public void onSubscribe(Disposable disposable) {
+
+                }
+            });
+        }
     }
 
     public void disconnectedDevice() {
@@ -175,6 +205,7 @@ public class PooaiBleManager {
             byte[] arrayOfbyte = characteristic.getValue();
             ToiletCommandObservable.getInstance().setValue(arrayOfbyte);
         }
+
     };
 
     private void findService(List<BluetoothGattService> paramList) {
