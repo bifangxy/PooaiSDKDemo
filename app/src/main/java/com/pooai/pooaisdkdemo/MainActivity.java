@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_urine)
     public void startUrine() {
-        PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
+        PooaiDetectionManager pooaiDetectionManager = PooaiDetectionManager.getInstance();
         pooaiDetectionManager.switchDetectionMode();
 
         pooaiDetectionManager.openUrineTank();
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_pregnancy)
     public void startPregnancy() {
-        PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
+        PooaiDetectionManager pooaiDetectionManager = PooaiDetectionManager.getInstance();
         pooaiDetectionManager.switchDetectionMode();
 
 
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_ovulation)
     public void startOvulation() {
-        PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
+        PooaiDetectionManager pooaiDetectionManager = PooaiDetectionManager.getInstance();
         pooaiDetectionManager.switchDetectionMode();
 
 
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_heart)
     public void startHeart() {
-        PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
+        PooaiDetectionManager pooaiDetectionManager = PooaiDetectionManager.getInstance();
         pooaiDetectionManager.startHeartTest(new PooaiDetectionManager.OnHeartDetectionListener() {
             @Override
             public void heartData(int heartData) {
@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_stop_heart)
     public void stopHeart(){
-        PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
+        PooaiDetectionManager pooaiDetectionManager = PooaiDetectionManager.getInstance();
         pooaiDetectionManager.stopHeartTest();
     }
 }

@@ -46,6 +46,14 @@ public class PooaiDetectionManager {
 
     private List<Long> mDataList = new ArrayList<>();
 
+    private static class SingletonHolder {
+        private static final PooaiDetectionManager INSTANCE = new PooaiDetectionManager();
+    }
+
+    public static PooaiDetectionManager getInstance() {
+        return PooaiDetectionManager.SingletonHolder.INSTANCE;
+    }
+
     //切换成为检测模式(注意 开始检测前需要切换成检测模式)
     public void switchDetectionMode() {
         PooaiToiletCommandManager.getInstance().changeToiletState(ToiletState.DETECTION);
