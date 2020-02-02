@@ -2,6 +2,9 @@ package com.pooai.blesdk.observer;
 
 import android.os.Message;
 
+import com.pooai.blesdk.PooaiToiletCommandManager;
+import com.pooai.blesdk.data.ToiletState;
+
 import java.util.Observable;
 
 /**
@@ -21,6 +24,9 @@ public class HeartParamsObservable extends Observable {
     }
 
     public void setValue(byte[] values) {
+        if (PooaiToiletCommandManager.getInstance().getToiletState() != ToiletState.HEART) {
+            return;
+        }
         if (mOnHeartReceiverListener != null) {
             mOnHeartReceiverListener.receive(values);
         }

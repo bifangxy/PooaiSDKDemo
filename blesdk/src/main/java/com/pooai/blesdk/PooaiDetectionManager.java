@@ -170,6 +170,7 @@ public class PooaiDetectionManager {
                 .doOnComplete(() -> {
                     PooaiPregnancyData pooaiPregnancyData = new PooaiPregnancyData();
                     pooaiPregnancyData.pregnancyResult = conversionDetectionResult(mDataList);
+                    pooaiPregnancyData.sourceData = mDataList.toString();
                     onDetectionListener.complete(pooaiPregnancyData);
                     Log.d(TAG, "--检测完成--");
                 })
@@ -262,6 +263,7 @@ public class PooaiDetectionManager {
                 .doOnComplete(() -> {
                     PooaiOvulationData pooaiOvulationData = new PooaiOvulationData();
                     pooaiOvulationData.ovulationResult = conversionDetectionResult(mDataList);
+                    pooaiOvulationData.sourceData = mDataList.toString();
                     onDetectionListener.complete(pooaiOvulationData);
                     Log.d(TAG, "--检测完成--");
                 })
@@ -339,7 +341,7 @@ public class PooaiDetectionManager {
         if (mHeartDispose != null && !mHeartDispose.isDisposed()) {
             return;
         }
-        PooaiToiletCommandManager.getInstance().changeToiletState(ToiletState.DETECTION);
+        PooaiToiletCommandManager.getInstance().changeToiletState(ToiletState.HEART);
         PooaiToiletCommandManager.getInstance().addToiletCommand(START_HEART_TEST);
         mHeartDispose = Observable
                 .create((ObservableOnSubscribe<byte[]>) emitter ->

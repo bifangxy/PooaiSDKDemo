@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void complete(PooaiUrineData data) {
                 Log.d(TAG, "---检测完成---");
-                Log.d(TAG, "---data---"+data.sourceData);
+                Log.d(TAG, "---data---" + data.sourceData);
             }
 
             @Override
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.bt_start_pregnancy)
-    public void startPregnancy(){
+    public void startPregnancy() {
         PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
         pooaiDetectionManager.switchDetectionMode();
 
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void complete(PooaiPregnancyData data) {
                 Log.d(TAG, "---检测完成---");
-                Log.d(TAG, "---data---"+data.pregnancyResult);
+                Log.d(TAG, "---data---" + data.pregnancyResult);
             }
 
             @Override
@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.bt_start_ovulation)
-    public void startOvulation(){
+    public void startOvulation() {
         PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
         pooaiDetectionManager.switchDetectionMode();
 
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void complete(PooaiOvulationData data) {
                 Log.d(TAG, "---检测完成---");
-                Log.d(TAG, "---data---"+data.ovulationResult);
+                Log.d(TAG, "---data---" + data.ovulationResult);
             }
 
             @Override
@@ -195,5 +195,32 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @OnClick(R.id.bt_start_heart)
+    public void startHeart() {
+        PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
+        pooaiDetectionManager.startHeartTest(new PooaiDetectionManager.OnHeartDetectionListener() {
+            @Override
+            public void heartData(int heartData) {
+                Log.d(TAG, "heartData =" + heartData);
+            }
+
+            @Override
+            public void heartRate(int heartRate, int errorType) {
+                Log.d(TAG, "heartData =" + heartRate+"  errorType = "+errorType);
+            }
+
+            @Override
+            public void complete() {
+
+            }
+        });
+    }
+
+    @OnClick(R.id.bt_stop_heart)
+    public void stopHeart(){
+        PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
+        pooaiDetectionManager.stopHeartTest();
     }
 }
