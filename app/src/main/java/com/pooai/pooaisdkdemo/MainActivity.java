@@ -124,13 +124,13 @@ public class MainActivity extends AppCompatActivity {
             mPooaiDetectionManager.stopUrineTest();
             return;
         }
+        isUrine = true;
         mPooaiDetectionManager.switchDetectionMode();
         mPooaiDetectionManager.openUrineTank();
         mPooaiDetectionManager.startUrineTest(new PooaiDetectionManager.OnDetectionListener<PooaiUrineData>() {
             @Override
             public void start() {
                 Log.d(TAG, "---开始尿检---");
-                isUrine = true;
             }
 
             @Override
@@ -158,12 +158,12 @@ public class MainActivity extends AppCompatActivity {
             mPooaiDetectionManager.stopPregnancyTest();
             return;
         }
+        isPregnancy = true;
         mPooaiDetectionManager.switchDetectionMode();
         mPooaiDetectionManager.openPregnancyAndOvulationTank();
         mPooaiDetectionManager.startPregnancyTest(new PooaiDetectionManager.OnDetectionListener<PooaiPregnancyData>() {
             @Override
             public void start() {
-                isPregnancy = true;
                 Log.d(TAG, "---开始孕检---");
             }
 
@@ -176,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void cancel() {
+                Log.d(TAG, "---取消孕检---");
                 isPregnancy = false;
             }
 
@@ -192,12 +193,12 @@ public class MainActivity extends AppCompatActivity {
             mPooaiDetectionManager.stopOvulationTest();
             return;
         }
+        isOvulation = true;
         mPooaiDetectionManager.switchDetectionMode();
         mPooaiDetectionManager.openPregnancyAndOvulationTank();
         mPooaiDetectionManager.startOvulationTest(new PooaiDetectionManager.OnDetectionListener<PooaiOvulationData>() {
             @Override
             public void start() {
-                isOvulation = true;
                 Log.d(TAG, "---开始排卵---");
             }
 

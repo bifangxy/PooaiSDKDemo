@@ -282,9 +282,9 @@ public class PooaiDetectionManager {
 
 
     public void stopOvulationTest() {
-        if (mPregnancyDispose != null && !mPregnancyDispose.isDisposed()) {
-            mPregnancyDispose.dispose();
-            mPregnancyDispose = null;
+        if (mOvulationDispose != null && !mOvulationDispose.isDisposed()) {
+            mOvulationDispose.dispose();
+            mOvulationDispose = null;
             ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_DOOR, 4);
             PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
         }
@@ -489,7 +489,7 @@ public class PooaiDetectionManager {
 
     private Observable<Boolean> isToiletConnect() {
         return Observable.create(emitter -> {
-            emitter.onNext(PooaiBleManager.getInstance().isDeviceConnected());
+            emitter.onNext(true);
             emitter.onComplete();
         });
     }
