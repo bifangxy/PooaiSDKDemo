@@ -135,7 +135,8 @@ public class PooaiBleManager {
         }
         BluetoothDevice bleDevice = bleAdapter.getRemoteDevice(bluetoothDevice.getAddress());
         bleGatt = bleDevice.connectGatt(context, false, bleGattCallback);
-        bleGatt.disconnect();
+        //先断开一次再连接，防止第一次连接出现奇奇怪怪的问题
+        disconnectedDevice();
         bleGatt = bleDevice.connectGatt(context, false, bleGattCallback);
     }
 
