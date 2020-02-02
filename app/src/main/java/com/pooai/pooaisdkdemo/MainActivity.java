@@ -19,6 +19,8 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.pooai.blesdk.PooaiBleManager;
 import com.pooai.blesdk.PooaiDetectionManager;
 import com.pooai.blesdk.PooaiToiletCommandManager;
+import com.pooai.blesdk.data.PooaiOvulationData;
+import com.pooai.blesdk.data.PooaiPregnancyData;
 import com.pooai.blesdk.data.PooaiUrineData;
 import com.pooai.blesdk.service.PooaiToiletService;
 
@@ -117,6 +119,70 @@ public class MainActivity extends AppCompatActivity {
             public void complete(PooaiUrineData data) {
                 Log.d(TAG, "---检测完成---");
                 Log.d(TAG, "---data---"+data.sourceData);
+            }
+
+            @Override
+            public void cancel() {
+
+            }
+
+            @Override
+            public void error(Throwable throwable) {
+
+            }
+        });
+    }
+
+    @OnClick(R.id.bt_start_pregnancy)
+    public void startPregnancy(){
+        PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
+        pooaiDetectionManager.switchDetectionMode();
+
+
+        pooaiDetectionManager.openPregnancyAndOvulationTank();
+
+        pooaiDetectionManager.startPregnancyTest(new PooaiDetectionManager.OnDetectionListener<PooaiPregnancyData>() {
+            @Override
+            public void start() {
+                Log.d(TAG, "---开始孕检---");
+            }
+
+            @Override
+            public void complete(PooaiPregnancyData data) {
+                Log.d(TAG, "---检测完成---");
+                Log.d(TAG, "---data---"+data.pregnancyResult);
+            }
+
+            @Override
+            public void cancel() {
+
+            }
+
+            @Override
+            public void error(Throwable throwable) {
+
+            }
+        });
+    }
+
+    @OnClick(R.id.bt_start_ovulation)
+    public void startOvulation(){
+        PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
+        pooaiDetectionManager.switchDetectionMode();
+
+
+        pooaiDetectionManager.openPregnancyAndOvulationTank();
+
+        pooaiDetectionManager.startOvulationTest(new PooaiDetectionManager.OnDetectionListener<PooaiOvulationData>() {
+            @Override
+            public void start() {
+                Log.d(TAG, "---开始排卵---");
+            }
+
+            @Override
+            public void complete(PooaiOvulationData data) {
+                Log.d(TAG, "---检测完成---");
+                Log.d(TAG, "---data---"+data.ovulationResult);
             }
 
             @Override

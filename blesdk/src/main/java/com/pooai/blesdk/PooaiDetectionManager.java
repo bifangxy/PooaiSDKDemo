@@ -191,7 +191,7 @@ public class PooaiDetectionManager {
     private Observable<Boolean> getPregnancyFirstStepObservable() {
         return Observable.timer(6000, TimeUnit.MILLISECONDS)
                 .flatMap((Function<Long, ObservableSource<Long>>) aLong -> Observable.interval(1000, TimeUnit.MILLISECONDS))
-                .map(aLong -> isOvulationSecondStepFinish(aLong))
+                .map(aLong -> isPregnancyFirstStepFinish())
                 .takeUntil((Predicate<Boolean>) aBoolean -> aBoolean);
     }
 
@@ -199,7 +199,7 @@ public class PooaiDetectionManager {
     private Observable<Boolean> getPregnancySecondStepObservable() {
         return Observable.timer(1000, TimeUnit.MILLISECONDS)
                 .flatMap((Function<Long, ObservableSource<Long>>) aLong -> Observable.interval(1000, TimeUnit.MILLISECONDS))
-                .map(aLong -> isOvulationSecondStepFinish(aLong))
+                .map(aLong -> isPregnancySecondStepFinish())
                 .takeUntil((Predicate<Boolean>) aBoolean -> aBoolean);
     }
 
@@ -283,14 +283,14 @@ public class PooaiDetectionManager {
     private Observable<Boolean> getOvulationFirstStepObservable() {
         return Observable.timer(6000, TimeUnit.MILLISECONDS)
                 .flatMap((Function<Long, ObservableSource<Long>>) aLong -> Observable.interval(1000, TimeUnit.MILLISECONDS))
-                .map(aLong -> isOvulationSecondStepFinish(aLong))
+                .map(aLong -> isOvulationFirstStepFinish())
                 .takeUntil((Predicate<Boolean>) aBoolean -> aBoolean);
     }
 
     private Observable<Boolean> getOvulationSecondStepObservable() {
         return Observable.timer(1000, TimeUnit.MILLISECONDS)
                 .flatMap((Function<Long, ObservableSource<Long>>) aLong -> Observable.interval(1000, TimeUnit.MILLISECONDS))
-                .map(aLong -> isOvulationSecondStepFinish(aLong))
+                .map(aLong -> isOvulationSecondStepFinish())
                 .takeUntil((Predicate<Boolean>) aBoolean -> aBoolean);
     }
 
@@ -308,9 +308,8 @@ public class PooaiDetectionManager {
         return ToiletRegisterData.getInstance().getRegisterValue(ToiletConfig.REGISTER_URINE_TEST1) == 38;
     }
 
-    private boolean isOvulationSecondStepFinish(long index) {
-        return index == 20;
-//        return ToiletRegisterData.getInstance().getRegisterValue(ToiletConfig.REGISTER_URINE_TEST1) >= 40;
+    private boolean isOvulationSecondStepFinish() {
+        return ToiletRegisterData.getInstance().getRegisterValue(ToiletConfig.REGISTER_URINE_TEST1) >= 40;
     }
 
     //打开尿检检测槽
