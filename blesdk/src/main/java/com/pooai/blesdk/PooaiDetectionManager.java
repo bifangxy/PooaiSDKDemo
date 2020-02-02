@@ -47,7 +47,7 @@ public class PooaiDetectionManager {
     private List<Long> mDataList = new ArrayList<>();
 
     //切换成为检测模式(注意 开始检测前需要切换成检测模式)
-    public static void switchDetectionMode() {
+    public void switchDetectionMode() {
         PooaiToiletCommandManager.getInstance().changeToiletState(ToiletState.DETECTION);
     }
 
@@ -124,6 +124,7 @@ public class PooaiDetectionManager {
     }
 
     private boolean isUrineTestFinish() {
+        Log.d(TAG, "value = " + ToiletRegisterData.getInstance().getRegisterValue(ToiletConfig.REGISTER_URINE_TEST1));
         return ToiletRegisterData.getInstance().getRegisterValue(ToiletConfig.REGISTER_URINE_TEST1) >= 38;
     }
 
@@ -312,19 +313,19 @@ public class PooaiDetectionManager {
     }
 
     //打开尿检检测槽
-    public static void openUrineTank() {
+    public void openUrineTank() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_DOOR, 1);
         PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }
 
     //打开孕检排卵检测槽
-    public static void openPregnancyAndOvulationTank() {
+    public void openPregnancyAndOvulationTank() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_DOOR, 3);
         PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }
 
     //关闭检测槽
-    public static void closeDetectionTank() {
+    public void closeDetectionTank() {
         ToiletCommand toiletCommand = ToiletRegisterData.getInstance().getRegisterCommand(ToiletConfig.REGISTER_URINE_DOOR, 2);
         PooaiToiletCommandManager.getInstance().addToiletCommand(toiletCommand);
     }

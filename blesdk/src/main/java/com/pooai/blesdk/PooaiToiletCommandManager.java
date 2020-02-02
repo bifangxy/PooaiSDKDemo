@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.pooai.blesdk.data.ToiletCommand;
 import com.pooai.blesdk.data.ToiletState;
+import com.pooai.blesdk.observer.ToiletCommandObservable;
 import com.pooai.blesdk.util.PooaiToiletDataUtil;
 import com.pooai.blesdk.util.TimerTaskUtil;
 
@@ -111,6 +112,7 @@ public class PooaiToiletCommandManager {
     }
 
     public void changeToiletState(ToiletState toiletState) {
+        ToiletCommandObservable.getInstance().setToiletState(toiletState);
         if (mToiletState != toiletState) {
             mToiletState = toiletState;
             switch (mToiletState) {

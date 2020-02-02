@@ -17,7 +17,9 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.pooai.blesdk.PooaiBleManager;
+import com.pooai.blesdk.PooaiDetectionManager;
 import com.pooai.blesdk.PooaiToiletCommandManager;
+import com.pooai.blesdk.data.PooaiUrineData;
 import com.pooai.blesdk.service.PooaiToiletService;
 
 import java.util.ArrayList;
@@ -96,5 +98,36 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.bt_send_command)
     public void sendCommand() {
         PooaiToiletCommandManager.getInstance().startHeartbeat();
+    }
+
+    @OnClick(R.id.bt_start_urine)
+    public void startUrine() {
+        PooaiDetectionManager pooaiDetectionManager = new PooaiDetectionManager();
+        pooaiDetectionManager.switchDetectionMode();
+
+        pooaiDetectionManager.openUrineTank();
+
+        pooaiDetectionManager.startUrineTest(new PooaiDetectionManager.OnDetectionListener<PooaiUrineData>() {
+            @Override
+            public void start() {
+                Log.d(TAG, "---开始尿检---");
+            }
+
+            @Override
+            public void complete(PooaiUrineData data) {
+                Log.d(TAG, "---检测完成---");
+                Log.d(TAG, "---data---"+data.sourceData);
+            }
+
+            @Override
+            public void cancel() {
+
+            }
+
+            @Override
+            public void error(Throwable throwable) {
+
+            }
+        });
     }
 }

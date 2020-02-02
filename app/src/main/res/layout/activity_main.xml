@@ -21,6 +21,13 @@
         android:text="发送命令!"
         app:layout_constraintStart_toEndOf="@+id/bt_start_service"
         app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:id="@+id/bt_start_urine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开始尿检!"
+        app:layout_constraintStart_toEndOf="@+id/bt_send_command"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_ble_device"
