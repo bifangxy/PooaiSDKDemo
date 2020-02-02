@@ -95,7 +95,7 @@ public class PooaiDetectionManager {
     }
 
     private Observable<Boolean> getUrineFinishObservable() {
-        return Observable.interval(1000, TimeUnit.MILLISECONDS)
+        return Observable.interval(6000, TimeUnit.MILLISECONDS)
                 .map(aLong -> isUrineTestFinish())
                 .takeUntil((Predicate<Boolean>) aBoolean -> aBoolean);
     }
