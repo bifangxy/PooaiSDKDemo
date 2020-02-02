@@ -125,7 +125,7 @@ public class PooaiBleManager {
         }
     }
 
-    public void connectDevice(Context context,BluetoothDevice bluetoothDevice) {
+    public void connectDevice(Context context, BluetoothDevice bluetoothDevice) {
         if (bluetoothDevice == null) {
             return;
         }
@@ -134,6 +134,8 @@ public class PooaiBleManager {
             bleGatt = null;
         }
         BluetoothDevice bleDevice = bleAdapter.getRemoteDevice(bluetoothDevice.getAddress());
+        bleGatt = bleDevice.connectGatt(context, false, bleGattCallback);
+        bleGatt.disconnect();
         bleGatt = bleDevice.connectGatt(context, false, bleGattCallback);
     }
 
