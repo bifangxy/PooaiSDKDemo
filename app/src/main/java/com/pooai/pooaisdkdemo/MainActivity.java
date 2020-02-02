@@ -106,9 +106,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @OnClick(R.id.bt_send_command)
+    @OnClick(R.id.bt_disconnect)
     public void sendCommand() {
-        PooaiToiletCommandManager.getInstance().startHeartbeat();
+        mPooaiBleManager.disconnectedDevice();
     }
 
     @OnClick(R.id.bt_start_urine)

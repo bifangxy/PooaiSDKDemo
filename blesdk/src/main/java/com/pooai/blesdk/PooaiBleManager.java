@@ -127,6 +127,14 @@ public class PooaiBleManager {
         bleGatt = bluetoothDevice.connectGatt(AppEvent.getContext(), false, bleGattCallback);
     }
 
+    public void disconnectedDevice(){
+        if (bleGatt != null) {
+            bleGatt.disconnect();
+            bleGatt.close();
+            bleGatt = null;
+        }
+    }
+
     BluetoothGattCallback bleGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {

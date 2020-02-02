@@ -15,10 +15,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/bt_send_command"
+        android:id="@+id/bt_disconnect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="发送命令!"
+        android:text="断开连接!"
         app:layout_constraintStart_toEndOf="@+id/bt_start_scan"
         app:layout_constraintTop_toTopOf="parent" />
     <Button
@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="开始尿检!"
-        app:layout_constraintStart_toEndOf="@+id/bt_send_command"
+        app:layout_constraintStart_toEndOf="@+id/bt_disconnect"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
