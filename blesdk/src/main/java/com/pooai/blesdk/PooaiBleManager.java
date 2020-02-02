@@ -131,7 +131,6 @@ public class PooaiBleManager {
         }
         if (bleGatt != null) {
             bleGatt.disconnect();
-            bleGatt.close();
             bleGatt = null;
         }
         BluetoothDevice bleDevice = bleAdapter.getRemoteDevice(bluetoothDevice.getAddress());
@@ -141,7 +140,6 @@ public class PooaiBleManager {
     public void disconnectedDevice() {
         if (bleGatt != null) {
             bleGatt.disconnect();
-            bleGatt.close();
             bleGatt = null;
         }
     }
