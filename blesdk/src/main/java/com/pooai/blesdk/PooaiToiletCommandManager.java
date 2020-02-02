@@ -53,7 +53,7 @@ public class PooaiToiletCommandManager {
         if (mTask != null) {
             return;
         }
-        mTask = TimerTaskUtil.intervalRx(0, 3000, new TimerTaskUtil.OnRxListener() {
+        mTask = TimerTaskUtil.intervalRx(0, 1000, new TimerTaskUtil.OnRxListener() {
             @Override
             public void onNext(Long aLong) {
                 if (mToiletState == ToiletState.HEART) {
@@ -90,9 +90,9 @@ public class PooaiToiletCommandManager {
     }
 
     private void sendToiletCommand(ToiletCommand toiletCommand) {
+        Log.d(TAG, "--发送马桶命令--");
         byte[] command = PooaiToiletDataUtil.getF06String(toiletCommand.getCommandAddress(), toiletCommand.getCommandValue());
         mPooaiBleManager.write(command);
-        Log.d(TAG, "--发送马桶命令--");
     }
 
     public void stopHeartbeat() {
@@ -112,8 +112,8 @@ public class PooaiToiletCommandManager {
     }
 
     public void changeToiletState(ToiletState toiletState) {
-        ToiletCommandObservable.getInstance().setToiletState(toiletState);
         if (mToiletState != toiletState) {
+            ToiletCommandObservable.getInstance().setToiletState(toiletState);
             mToiletState = toiletState;
             switch (mToiletState) {
                 case CONTROL:

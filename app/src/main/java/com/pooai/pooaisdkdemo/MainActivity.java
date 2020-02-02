@@ -13,9 +13,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
+import android.widget.Button;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.pooai.blesdk.PooaiBleManager;
 import com.pooai.blesdk.PooaiControlManager;
 import com.pooai.blesdk.PooaiDetectionManager;
@@ -23,7 +22,6 @@ import com.pooai.blesdk.PooaiToiletCommandManager;
 import com.pooai.blesdk.data.PooaiOvulationData;
 import com.pooai.blesdk.data.PooaiPregnancyData;
 import com.pooai.blesdk.data.PooaiUrineData;
-import com.pooai.blesdk.service.PooaiToiletService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +36,16 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.rv_ble_device)
     RecyclerView mRecyclerView;
 
-    private BleApdater mBleApdater;
+    @BindView(R.id.bt_start_scan)
+    Button mBtStartScan;
+
+    private BleAdapter mBleAdapter;
 
     private List<BluetoothDevice> mPooaiBleDeviceList;
 
     private PooaiBleManager mPooaiBleManager;
+
+    private PooaiDetectionManager mPooaiDetectionManager;
 
     private PooaiControlManager mPooaiControlManager;
 
@@ -60,43 +63,45 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mPooaiBleDeviceList = new ArrayList<>();
-        mBleApdater = new BleApdater(mPooaiBleDeviceList);
+        mBleAdapter = new BleAdapter(mPooaiBleDeviceList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mBleApdater);
+        mRecyclerView.setAdapter(mBleAdapter);
 
 
         mPooaiBleManager = PooaiBleManager.getInstance();
         mPooaiControlManager = PooaiControlManager.getInstance();
+        mPooaiDetectionManager = PooaiDetectionManager.getInstance();
         mPooaiBleManager.initBLE();
         initListener();
     }
 
     private void initListener() {
-
-        mBleApdater.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                BluetoothDevice pooaiBleDevice = mBleApdater.getData().get(position);
-                mPooaiBleManager.connectDevice(pooaiBleDevice);
-            }
+        mBleAdapter.setOnItemClickListener((adapter, view, position) -> {
+            BluetoothDevice pooaiBleDevice = mBleAdapter.getData().get(position);
+            mPooaiBleManager.connectDevice(pooaiBleDevice);
         });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    @OnClick(R.id.bt_start_service)
-    public void startService() {
+    @OnClick(R.id.bt_start_scan)
+    public void startScan() {
         mPooaiBleManager.startScan(new PooaiBleManager.OnBleScanListener() {
             @Override
             public void scanResult(BluetoothDevice bluetoothDevice) {
                 if (!mPooaiBleDeviceList.contains(bluetoothDevice)) {
                     mPooaiBleDeviceList.add(bluetoothDevice);
-                    mBleApdater.notifyDataSetChanged();
+                    mBleAdapter.notifyDataSetChanged();
                 }
             }
 
             @Override
             public void startScan() {
+                mBtStartScan.setText("正在扫描");
+            }
 
+            @Override
+            public void stopScan() {
+                mBtStartScan.setText("开始扫描");
             }
         });
     }
@@ -108,12 +113,9 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_urine)
     public void startUrine() {
-        PooaiDetectionManager pooaiDetectionManager = PooaiDetectionManager.getInstance();
-        pooaiDetectionManager.switchDetectionMode();
-
-        pooaiDetectionManager.openUrineTank();
-
-        pooaiDetectionManager.startUrineTest(new PooaiDetectionManager.OnDetectionListener<PooaiUrineData>() {
+        mPooaiDetectionManager.switchDetectionMode();
+        mPooaiDetectionManager.openUrineTank();
+        mPooaiDetectionManager.startUrineTest(new PooaiDetectionManager.OnDetectionListener<PooaiUrineData>() {
             @Override
             public void start() {
                 Log.d(TAG, "---开始尿检---");
@@ -139,13 +141,9 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_pregnancy)
     public void startPregnancy() {
-        PooaiDetectionManager pooaiDetectionManager = PooaiDetectionManager.getInstance();
-        pooaiDetectionManager.switchDetectionMode();
-
-
-        pooaiDetectionManager.openPregnancyAndOvulationTank();
-
-        pooaiDetectionManager.startPregnancyTest(new PooaiDetectionManager.OnDetectionListener<PooaiPregnancyData>() {
+        mPooaiDetectionManager.switchDetectionMode();
+        mPooaiDetectionManager.openPregnancyAndOvulationTank();
+        mPooaiDetectionManager.startPregnancyTest(new PooaiDetectionManager.OnDetectionListener<PooaiPregnancyData>() {
             @Override
             public void start() {
                 Log.d(TAG, "---开始孕检---");
@@ -171,13 +169,9 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_ovulation)
     public void startOvulation() {
-        PooaiDetectionManager pooaiDetectionManager = PooaiDetectionManager.getInstance();
-        pooaiDetectionManager.switchDetectionMode();
-
-
-        pooaiDetectionManager.openPregnancyAndOvulationTank();
-
-        pooaiDetectionManager.startOvulationTest(new PooaiDetectionManager.OnDetectionListener<PooaiOvulationData>() {
+        mPooaiDetectionManager.switchDetectionMode();
+        mPooaiDetectionManager.openPregnancyAndOvulationTank();
+        mPooaiDetectionManager.startOvulationTest(new PooaiDetectionManager.OnDetectionListener<PooaiOvulationData>() {
             @Override
             public void start() {
                 Log.d(TAG, "---开始排卵---");
@@ -203,8 +197,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.bt_start_heart)
     public void startHeart() {
-        PooaiDetectionManager pooaiDetectionManager = PooaiDetectionManager.getInstance();
-        pooaiDetectionManager.startHeartTest(new PooaiDetectionManager.OnHeartDetectionListener() {
+        mPooaiDetectionManager.startHeartTest(new PooaiDetectionManager.OnHeartDetectionListener() {
             @Override
             public void heartData(int heartData) {
                 Log.d(TAG, "heartData =" + heartData);

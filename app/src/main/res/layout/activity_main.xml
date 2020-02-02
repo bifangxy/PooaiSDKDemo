@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/bt_start_service"
+        android:id="@+id/bt_start_scan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="开始扫描!"
@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="发送命令!"
-        app:layout_constraintStart_toEndOf="@+id/bt_start_service"
+        app:layout_constraintStart_toEndOf="@+id/bt_start_scan"
         app:layout_constraintTop_toTopOf="parent" />
     <Button
         android:id="@+id/bt_start_urine"

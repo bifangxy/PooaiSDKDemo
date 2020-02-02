@@ -489,9 +489,7 @@ public class PooaiDetectionManager {
 
     private Observable<Boolean> isToiletConnect() {
         return Observable.create(emitter -> {
-            //TODO 判断设备是否连接
-
-            emitter.onNext(true);
+            emitter.onNext(PooaiBleManager.getInstance().isDeviceConnected());
             emitter.onComplete();
         });
     }

@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.pooai.blesdk.data.PooaiBleDevice;
 
 import java.util.List;
 
@@ -14,8 +13,8 @@ import java.util.List;
  * 作者：created by xieying on 2020-02-01 14:01
  * 功能：
  */
-public class BleApdater extends BaseQuickAdapter<BluetoothDevice, BaseViewHolder> {
-    public BleApdater(@Nullable List<BluetoothDevice> data) {
+public class BleAdapter extends BaseQuickAdapter<BluetoothDevice, BaseViewHolder> {
+    public BleAdapter(@Nullable List<BluetoothDevice> data) {
         super(R.layout.item_ble_device, data);
     }
 

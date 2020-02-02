@@ -40,6 +40,8 @@ public class PooaiBleManager {
 
     private boolean mScanning;
 
+    private boolean mConnected;
+
     private static class SingletonHolder {
         private static final PooaiBleManager INSTANCE = new PooaiBleManager();
     }
@@ -76,7 +78,7 @@ public class PooaiBleManager {
     }
 
     public void startScan(OnBleScanListener onBleScanListener) {
-        if(mScanning){
+        if (mScanning) {
             return;
         }
         mOnBleScanListener = onBleScanListener;
@@ -103,11 +105,17 @@ public class PooaiBleManager {
         });
         mScanning = true;
         bleAdapter.startLeScan(startLeScan);
+        if (mOnBleScanListener != null) {
+            mOnBleScanListener.startScan();
+        }
     }
 
     public void stopScan() {
         bleAdapter.stopLeScan(startLeScan);
         mScanning = false;
+        if (mOnBleScanListener != null) {
+            mOnBleScanListener.stopScan();
+        }
     }
 
     public void connectDevice(BluetoothDevice bluetoothDevice) {
@@ -123,10 +131,14 @@ public class PooaiBleManager {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
+            Log.d(TAG, "status = " + status + "  newState = " + newState);
             if (newState == 2) {
                 Log.d(TAG, "马桶已连接");
+                mConnected = true;
                 gatt.discoverServices();
             } else if (newState == 0) {
+                PooaiToiletCommandManager.getInstance().stopHeartbeat();
+                mConnected = false;
                 Log.d(TAG, "马桶断开连接");
                 gatt.disconnect();
                 gatt.close();
@@ -176,6 +188,7 @@ public class PooaiBleManager {
                 }
             }
         }
+        PooaiToiletCommandManager.getInstance().startHeartbeat();
     }
 
     public boolean write(byte[] byteArray) {
@@ -193,6 +206,12 @@ public class PooaiBleManager {
         void scanResult(BluetoothDevice bluetoothDevice);
 
         void startScan();
+
+        void stopScan();
+    }
+
+    public boolean isDeviceConnected() {
+        return mConnected;
     }
 
 }
