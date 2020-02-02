@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
@@ -124,7 +125,7 @@ public class PooaiBleManager {
         }
     }
 
-    public void connectDevice(BluetoothDevice bluetoothDevice) {
+    public void connectDevice(Context context,BluetoothDevice bluetoothDevice) {
         if (bluetoothDevice == null) {
             return;
         }
@@ -133,7 +134,8 @@ public class PooaiBleManager {
             bleGatt.close();
             bleGatt = null;
         }
-        bleGatt = bluetoothDevice.connectGatt(AppEvent.getContext(), false, bleGattCallback);
+        BluetoothDevice bleDevice = bleAdapter.getRemoteDevice(bluetoothDevice.getAddress());
+        bleGatt = bleDevice.connectGatt(context, false, bleGattCallback);
     }
 
     public void disconnectedDevice() {

@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         mBleAdapter.setOnItemClickListener((adapter, view, position) -> {
             BluetoothDevice pooaiBleDevice = mBleAdapter.getData().get(position);
             //第一次连接需要点击两次才能连接上，需要解决
-            mPooaiBleManager.connectDevice(pooaiBleDevice);
+            mPooaiBleManager.connectDevice(this,pooaiBleDevice);
         });
     }
 
